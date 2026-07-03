@@ -16,17 +16,25 @@ This is the most important stage — a weak brief produces a weak video regardle
 
 ## Process
 
-### Step 1: Understand the Request
+### Step 0: Creative Intake (always run first)
 
-Before doing anything, clarify the user's intent:
+Read and follow `skills/meta/creative-intake.md`.
 
-- **Topic**: What is the core subject? (e.g., "vector databases", "how HTTPS works", "why the sky is blue")
-- **Audience**: Who is this for? (developers, general public, students, executives)
-- **Platform**: Where will this be published? (YouTube, TikTok, Instagram, LinkedIn) — this constrains duration and style
-- **Duration**: Target length. Defaults by platform: TikTok 30-60s, Instagram Reels 60-90s, YouTube 60-180s, LinkedIn 60-120s
-- **Tone**: Casual, professional, educational, provocative, playful
+Call `prompt_expansion` with the user's raw input. The tool extracts topic, audience,
+platform, tone, and outcome from whatever the user already provided.
 
-If the user's request is vague (e.g., "make a video about AI"), ask targeted questions. Never guess when you can ask.
+- **`gaps == []`**: brief is complete — go directly to Step 2 (Research).
+  Use `brief_fields` from the tool output as the seed for the brief artifact.
+- **`gaps` non-empty**: ask only the listed fields in priority order. A vague request
+  like "make a video about AI" will return gaps for audience and platform; a detailed
+  request with full context returns no gaps.
+
+Once the stop condition is met, call `prompt_expansion` with full `conversation_history`
+to get `brief_fields`, `scene_plan_draft`, and `video_prompts_draft`. Store these in
+`brief.metadata` for downstream stages.
+
+Duration defaults (apply when `target_duration_seconds` is not stated):
+TikTok 30–60s · Instagram Reels 60–90s · YouTube 60–180s · LinkedIn 60–120s
 
 ### Step 2: Research the Topic
 

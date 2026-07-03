@@ -3,82 +3,132 @@
 Before the research stage, gather user intent through targeted questions.
 Do NOT start production on a vague brief.
 
-## Required Questions (ask conversationally, not as a survey)
+## Step 0 — Auto-Extraction (always run first)
 
-1. **Purpose**: What is this video FOR? (educate, sell, inspire, document, entertain)
-2. **Audience**: Who will watch it? (age, expertise, context — "my team" vs "YouTube public")
-3. **Platform**: Where will it live? (YouTube, internal Slack, social media, presentation, website)
-4. **Tone**: What should it FEEL like? (serious, playful, cinematic, raw, warm, provocative)
-5. **References**: Any videos you admire or want this to feel like?
-6. **Outcome**: What should the viewer DO or FEEL after watching?
-7. **Constraints**: Budget ceiling? Timeline? Must-include content?
+Call the `prompt_expansion` tool with the user's raw input:
 
-## How to Ask
+```
+prompt_expansion({
+  raw_input: "<user message>",
+  pipeline_type: "<pipeline if known>",
+  target_duration_seconds: <int if stated>
+})
+```
 
-Don't dump all 7 questions at once. Start with purpose and audience,
-then let the conversation flow. Fill in gaps naturally.
+Read the result:
 
-If the user gives a detailed brief, skip questions they've already answered.
+- **`gaps` is empty** → the user's brief is complete. Skip all questions below.
+  Proceed directly to research with the returned `brief_fields` and `scene_plan`.
+- **`gaps` is non-empty** → only ask about the listed fields, in the priority order
+  returned. Do not ask about fields not in `gaps`.
 
-Identify what the user has already told you. If they said "I want a
-cinematic brand film for Instagram," you already have purpose (inspire/sell),
-platform (Instagram), and tone (cinematic). Ask what's missing.
+This means a detailed, professional prompt gets zero follow-up questions.
+Multi-turn Q&A only happens when the tool says information is missing.
 
-## Handling Vague Briefs
+---
 
-When the user says something like "make me a video about X":
+## Asking About Gaps (only when gaps ≠ [])
+
+Don't dump all gaps at once. Ask conversationally — start with the first (highest
+priority) gap, then continue based on answers.
+
+**Priority order** (also the order `prompt_expansion` returns gaps):
+1. purpose — what the video is FOR (educate, sell, inspire, document, entertain)
+2. audience — who watches it (age, expertise, context)
+3. platform — where it lives (youtube, instagram, tiktok, linkedin, generic)
+4. tone — what it should FEEL like (serious, playful, cinematic, raw, warm, provocative)
+5. outcome — what the viewer should DO or FEEL after watching
+6. constraints — budget ceiling, timeline, must-include content
+7. references — videos or images the user admires (never block on this)
+
+After each user answer, call `prompt_expansion` again with the updated
+`conversation_history`. Check the new `gaps` list — stop asking when it is empty
+or only contains `references` and `constraints`.
+
+### Stop condition
+
+```
+gaps == [] OR (remaining gaps ⊆ {references, constraints})
+```
+
+---
+
+## Handling Different Brief Types
+
+### Vague brief ("make me a video about X")
 
 1. Acknowledge the topic — show you understood.
-2. Ask the single most important missing question first (usually purpose or audience).
-3. Based on their answer, ask the next most important gap.
-4. Stop asking when you have enough to start research. You don't need perfect answers — research will fill in details.
+2. Ask only the first gap from `prompt_expansion` output.
+3. After each answer, re-call the tool and ask the next gap.
+4. Stop when stop condition is met.
 
-## Handling Detailed Briefs
+### Detailed brief (multi-paragraph or document)
 
-When the user provides a multi-paragraph brief or a document:
+1. Summarize what you understood in 1–2 sentences.
+2. Call `prompt_expansion` — if gaps is empty, confirm and move on.
+3. If gaps remain, call out only those: "I have a clear picture of audience and tone,
+   but I'd love to know — is there a specific outcome you're hoping for?"
 
-1. Summarize what you understood (1-2 sentences).
-2. Call out any gaps: "I have a clear picture of the audience and tone, but I'd love to know — is there a specific outcome you're hoping for?"
-3. Confirm the platform and constraints if not stated.
+### Professional prompt (detailed visual/camera language, 5-aspect style)
 
-## Output
+`prompt_expansion` will return `gaps: []`. Do not ask any follow-up questions.
+Treat `scene_plan` and `video_prompts` from the tool as ready for asset-director.
 
-Produce an `intake_brief` (informal, not schema-validated) that the
-research stage uses as its starting context. Include:
+---
 
-- Direct quotes from the user where their language reveals intent
-- Explicit answers to each of the 7 questions (mark any that were inferred vs stated)
-- Any reference videos/images the user mentioned
-- Constraints that must be honored (budget, timeline, must-include)
+## Final Output
 
-The intake_brief is passed as context to the research-director, not as a
-formal artifact. It exists to prevent the research stage from inventing
-intent that the user never expressed.
+Once `gaps == []`, call `prompt_expansion` one final time with the full
+`conversation_history` to get the complete output:
+
+```
+prompt_expansion({
+  raw_input: "<final user message or summary>",
+  conversation_history: [...all prior turns...],
+  pipeline_type: "<pipeline>",
+  target_duration_seconds: <int>
+})
+```
+
+Store results in the `brief` artifact:
+
+- `brief_fields` → map directly to brief schema fields (title, hook, tone, etc.)
+- `scene_plan` → store in `brief.metadata.scene_plan_draft`
+- `video_prompts` → store in `brief.metadata.video_prompts_draft`
+- Conversation log → store in `brief.metadata.intake_log` as
+  `[{turn: int, role: str, content: str}]`
+
+The intake_brief (informal version) is passed as context to research-director.
+Include direct quotes from the user where their language reveals intent.
+
+---
 
 ## Handling Reference Video Input
 
 When the user provides a video URL or file as their starting point:
 
 1. **Read the video-reference-analyst skill** (`skills/meta/video-reference-analyst.md`)
-   and follow its protocol. Do not proceed with standard creative intake.
+   and follow its protocol. Do not run standard creative intake.
 
-2. The VideoAnalysisBrief replaces the need for most intake questions — it provides
-   tone, structure, pacing, audience signals, and style information directly from the
-   reference.
+2. The VideoAnalysisBrief replaces most intake questions — it provides tone, structure,
+   pacing, audience signals, and style information directly from the reference.
 
-3. The remaining intake questions are:
-   - What topic/subject for YOUR version? (if different from reference)
-   - How long?
+3. After video analysis, call `prompt_expansion` with the analysis summary as
+   `raw_input` to detect any remaining gaps. The only gaps that typically remain:
+   - What topic/subject for YOUR version?
+   - Target duration?
    - Narration yes/no?
    - Budget ceiling?
 
-4. Do NOT ask "what should it feel like?" — the reference video IS the answer to that
-   question. Extract tone from the VideoAnalysisBrief instead.
+4. Do NOT ask "what should it feel like?" — extract tone from the VideoAnalysisBrief.
+
+---
 
 ## What NOT To Do
 
 - Do not present a numbered survey. This is a conversation, not a form.
-- Do not ask questions the user already answered in their initial message.
-- Do not delay production unnecessarily — if the brief is clear, move on.
-- Do not invent answers for questions the user didn't address. Mark them as "not specified" and let the research stage handle ambiguity.
-- Do not assume the user wants an explainer. Many users want cinematic, animation, or source-led work. Listen for signals.
+- Do not ask questions that `prompt_expansion` says are already covered.
+- Do not delay production — if `gaps == []`, move on immediately.
+- Do not invent answers. Mark inferred fields as such (confidence < 1.0 in tool output).
+- Do not assume the user wants an explainer. Listen for signals in tone and vocabulary.
+- Do not call `prompt_expansion` more than once per user turn (batch all context).

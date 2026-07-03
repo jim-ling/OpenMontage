@@ -14,6 +14,27 @@ Do not use this pipeline just because the user said "make it look cinematic." If
 
 ## Process
 
+### 0. Creative Intake (always run first)
+
+Read and follow `skills/meta/creative-intake.md`.
+
+Call `prompt_expansion` with the user's raw input. Check the returned `gaps` list for
+the two cinematic-critical fields: `source_mode` and `motion_required`. These are the
+pipeline's primary decision forks — everything downstream depends on them.
+
+**If `gaps == []`**: the brief is complete. Use `brief_fields` and `scene_plan_draft`
+from the tool output. Skip to Step 5 (Music Plan) unless the scene_plan already
+addresses music.
+
+**If `gaps` contains `source_mode` or `motion_required`**: ask about those first,
+before any other gaps. Example questions:
+- "Do you have existing footage, or should I generate all video clips from scratch?"
+- "Does this need moving video shots, or would a dramatic still-led montage work?"
+
+Once the stop condition is met (`gaps == []` or only `references`/`constraints`
+remain), call `prompt_expansion` with full conversation history to get the complete
+`scene_plan_draft` and `video_prompts_draft`, then continue to Step 1.
+
 ### 1. Classify The Source Reality
 
 Capture the source mode:
