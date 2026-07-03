@@ -1,0 +1,288 @@
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "kling/kling-v3-video-generation",
+    "input": {
+        "prompt": "",
+        "multi_shot": true,
+        "shot_type": "customize",
+        "multi_prompt": [
+            {
+                "index": 1,
+                "prompt": "雾岭镇比地图上更小，山雾像棉絮一样堵在街口。邮局背后果然有三棵槐树，第三棵树根旁的泥土被人动过。",
+                "duration": 5
+            },
+            {
+                "index": 2,
+                "prompt": "林澈蹲下挖出一个铁盒，里面除了一把生锈的钥匙，还有一盘老旧的录音带。录音机是邮局借的，按下播放键时，父亲的声音从沙沙杂音里爬出来：“如果你听到这段话，说明你已经走到我走过的路上了。",
+                "duration": 5
+            }
+        ],
+        "media": [],
+        "element_list": []
+    },
+    "parameters": {
+        "mode": "pro",
+        "duration": 10,
+        "audio": true,
+        "aspect_ratio": "9:16",
+        "watermark": true
+    }
+}'
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "kling/kling-v3-video-generation",
+    "input": {
+        "prompt": "一只小猫在月光下奔跑"
+    },
+    "parameters": {
+        "mode": "std",
+        "aspect_ratio": "16:9",
+        "duration": 5,
+        "audio": false,
+        "watermark": true
+    }
+}'
+支持模型：kling/kling-v3-omni-video-generation、kling/kling-v3-video-generation 
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "kling/kling-v3-omni-video-generation",
+    "input": {
+        "prompt": "让图片中的人物动起来，头发被微风吹动",
+        "media": [
+            {
+                "type": "first_frame",
+                "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260121/zlpocv/wan-i2v-haigui.webp"
+            }
+        ]
+    },
+    "parameters": {
+        "mode": "std",
+        "duration": 5,
+        "audio": false,
+        "watermark": true
+    }
+}'
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "kling/kling-v3-omni-video-generation",
+    "input": {
+        "prompt": "<<<element_1>>>背景，<<<image_2>>>和<<<image_1>>>握手交谈，<<<video_1>>>人物穿着黑色风衣的侦探站在公寓楼顶，手持望远镜观察街道",
+        "multi_shot": false,
+        "shot_type": "intelligence",
+        "multi_prompt": [],
+        "media": [
+            {
+                "url": "https://p2-kling.klingai.com/kcdn/cdn-kcdn112452/kling-qa-test/lip_sync_5s.mp4",
+                "type": "base",
+                "keep_original_sound": "yes"
+            },
+            {
+                "type": "refer",
+                "url": "https://p2-kling.klingai.com/kcdn/cdn-kcdn112452/kling-qa-test/zem_test/yangmi01.jpg"
+            },
+            {
+                "type": "refer",
+                "url": "https://p2-kling.klingai.com/kcdn/cdn-kcdn112452/kling-qa-test/human_2.JPG"
+            }
+        ],
+        "element_list": [
+            {
+                "element_id": 171
+            }
+        ]
+    },
+    "parameters": {
+        "mode": "pro",
+        "duration": 10,
+        "audio": false,
+        "aspect_ratio": "1:1",
+        "watermark": true
+    }
+}'
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.7-i2v-2026-04-25",
+    "input": {
+        "prompt": "一幅都市奇幻艺术的场景。一个充满动感的涂鸦艺术角色。一个由喷漆所画成的少年，正从一面混凝土墙上活过来。他一边用极快的语速演唱一首英文rap，一边摆着一个经典的、充满活力的说唱歌手姿势。场景设定在夜晚一个充满都市感的铁路桥下。灯光来自一盏孤零零的街灯，营造出电影般的氛围，充满高能量和惊人的细节。视频的音频部分完全由rap构成，没有其他对话或杂音。",
+        "media": [
+            {
+                "type": "first_frame",
+                "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png"
+            },
+            {
+                "type": "driving_audio",
+                "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/ozwpvi/rap.mp3"
+                
+            }
+        ]
+    },
+    "parameters": {
+        "resolution": "720P",
+        "duration": 10,
+        "prompt_extend": true,
+        "watermark": true
+    }
+}'
+
+curl --location 'https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.7-t2v-2026-06-12",
+    "input": {
+        "prompt": "一段紧张刺激的侦探追查故事，展现电影级叙事能力。第1个镜头[0-3秒] 全景：雨夜的纽约街头，霓虹灯闪烁，一位身穿黑色风衣的侦探快步行走。 第2个镜头[3-6秒] 中景：侦探进入一栋老旧建筑，雨水打湿了他的外套，门在他身后缓缓关闭。 第3个镜头[6-9秒] 特写：侦探的眼神坚毅专注，远处传来警笛声，他微微皱眉思考。 第4个镜头[9-12秒] 中景：侦探在昏暗走廊中小心前行，手电筒照亮前方。 第5个镜头[12-15秒] 特写：侦探发现关键线索，脸上露出恍然大悟的表情。"
+    },
+    "parameters": {
+        "resolution": "720P",
+        "ratio": "16:9",
+        "prompt_extend": true,
+        "watermark": true,
+        "duration": 15
+    }
+}'
+
+curl --location 'https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.7-r2v-2026-06-12",
+    "input": {
+        "prompt": "参考图片，3D卡通冒险电影风，角色Q版但材质细腻，动作流畅，色彩鲜明，保持角色与森林场景一致，不要加入文字。氛围： 冒险、轻快、神秘、童趣。角色： 小男孩探险家：圆帽、背包、短斗篷。小伙伴：会飞的小机器人，圆形身体，蓝色发光眼。场景： 奇幻森林，巨大树根、蘑菇、藤蔓、藏宝洞口、阳光光束。分镜脚本： 1. 全景：奇幻森林里高大树木与光束交错，环境神秘明亮。 2. 中景：小男孩拨开藤蔓向前探路。 3. 中景：小机器人飞在他身边，用蓝光扫描前方。 4. 特写：一张旧藏宝图在男孩手里展开。 5. 近景：他露出兴奋表情，眼睛亮起来。 6. 动作镜头：两人跳过树根和小溪，继续深入森林。 7. 中景：藤蔓后方露出一个被苔藓覆盖的宝箱。 8. 特写：宝箱边缘闪出金色光芒。 9. 收束镜头：男孩和小机器人站在宝箱前惊喜对望，冒险感拉满。",
+        "media": [
+            {
+                "type": "reference_image",
+                "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260403/wgjaxy/banana_storyboard_00000020.png"
+            }
+        ]
+    },
+    "parameters": {
+        "resolution": "720P",
+        "duration": 10,
+        "prompt_extend": false,
+        "watermark": true
+    }
+}'
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image2video/video-synthesis' \
+    --header 'X-DashScope-Async: enable' \
+    --header "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "model": "wan2.2-animate-move",
+        "input": {
+            "image_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250919/adsyrp/move_input_image.jpeg",
+            "video_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250919/kaakcn/move_input_video.mp4",
+            "watermark": true
+        },
+        "parameters": {
+            "mode": "wan-std"
+        }
+      }'
+# === 图像生成 ===
+1. 千问图像生成（Qwen-Image）
+API Endpoint（北京地域） ：
+
+text
+https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation
+模型 ID	说明
+qwen-image-2.0-pro	Pro 系列，文字渲染、真实质感、语义遵循能力强
+qwen-image-2.0-pro-2026-04-22	Pro 系列 2026-04-22 版本
+qwen-image-2.0	加速版，兼顾效果与响应速度
+qwen-image-max-2025-12-30	Max 系列，真实感、自然度更强
+qwen-image-plus-2026-01-09	Plus 系列，擅长多样化艺术风格
+2. 千问图像编辑（Qwen-Image-Edit）
+API Endpoint：同图像生成接口
+
+模型 ID	说明
+qwen-image-2.0-pro	图像编辑 Pro 系列
+qwen-image-2.0	图像编辑加速版
+qwen-image-edit-max-2026-01-16	编辑 Max 系列，工业设计、几何推理更强
+qwen-image-edit-plus-2025-12-15	编辑 Plus 系列，支持多图输出
+qwen-image-edit	基础编辑模型
+3. 可灵图像生成（Kling）
+API Endpoint（北京地域） ：
+
+text
+https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation
+
+模型 ID	说明
+kling/kling-v3-image-generation	文生图、参考图生图（单图输入）
+kling/kling-v3-omni-image-generation	文生图、参考图生图（多图输入，支持分镜组图）
+🎬 视频生成模型
+视频生成 API 通用 Endpoint（不同地域有不同地址）：
+
+1. HappyHorse 1.1
+通用 Endpoint 模板（需替换 {WorkspaceId}）：
+
+text
+# 北京地域
+https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis
+
+模型 ID	说明
+happyhorse-1.0-t2v	文生视频
+happyhorse-1.1-i2v	图生视频（基于首帧）
+happyhorse-1.1-r2v	参考生视频（支持多张参考图）
+2. 万相（Wan）系列
+API Endpoint：同上通用 Endpoint
+
+模型 ID	说明
+wan2.7-r2v	参考生视频（新版协议，支持多模态输入：图片/视频/音频）
+wan2.7-i2v-2026-04-25	图生视频（首尾帧模型，推荐）
+wan2.6 系列	旧版协议，支持 wan2.6/wan2.5/wan2.2 模型
+3. 可灵视频生成（Kling）
+API Endpoint（北京地域） ：
+
+text
+https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis
+
+模型 ID	说明
+kling/kling-v3-video-generation	文生视频、图生视频、参考生视频、视频编辑
+kling/kling-v3-omni-video-generation	文生视频（含智能分镜）
+4. 爱诗（PixVerse）
+API Endpoint（北京地域） ：
+
+text
+https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis
+
+模型 ID	说明
+pixverse/pixverse-c1-r2v	参考生视频
+📋 快速配置汇总
+text
+# === 图像生成 ===
+# Endpoint（北京）
+POST https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation
+
+# 模型 ID 示例
+qwen-image-2.0-pro          # 千问文生图 Pro
+kling/kling-v3-image-generation  # 可灵文生图
+
+# === 视频生成 ===
+# Endpoint（北京，需替换 {WorkspaceId}）
+POST https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis
+
+# 模型 ID 示例
+happyhorse-1.0-t2v          # HappyHorse 文生视频
+wan2.7-r2v                  # 万相参考生视频
+kling/kling-v3-video-generation  # 可灵视频生成
